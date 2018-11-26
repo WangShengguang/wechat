@@ -1,16 +1,10 @@
 # -*- coding:utf-8 -*-
-from flask import render_template
-from flask.ext.login import current_user
 import hashlib
-import sys
 import xml.etree.ElementTree as ET
 
-from flask import Flask, request, make_response, current_app
-from flask.ext.script import Manager
+from flask import render_template
+from flask import request, make_response, current_app
 
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 from . import main
 
 MAX_SEARCH_RESULTS = 50
@@ -20,7 +14,7 @@ MAX_SEARCH_RESULTS = 50
 def wechat_auth():
     app = current_app._get_current_object()
     if request.method == 'GET':
-        print 'coming Get'
+        print('coming Get')
         data = request.args
         token = app.config.get('TOKEN')
         signature = data.get('signature', '')
@@ -51,7 +45,7 @@ def wechat_auth():
             content = content[::-1]
             content = content.encode('UTF-8')
         elif type(content).__name__ == "str":
-            print type(content).__name__
+            print(type(content).__name__)
             content = content.decode('utf-8')
             content = content[::-1]
         return render_template('text.html', toUserName=toUserName, fromUserName=fromUserName, createTime=createTime,

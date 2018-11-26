@@ -1,19 +1,13 @@
 # -*- coding:utf-8 -*-
-from flask import Flask, render_template
-from flask.ext.bootstrap import Bootstrap
-from flask.ext.mail import Mail
-from flask.ext.moment import Moment
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager
-from flask.ext.pagedown import PageDown
+
+from flask import Flask
+from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
+from flask_mail import Mail
+from flask_moment import Moment
+from flask_pagedown import PageDown
+
 from config import config
-
-from flask.ext.whooshalchemyplus import whoosh_index
-
-import sys
-
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 bootstrap = Bootstrap()
 mail = Mail()
@@ -33,7 +27,7 @@ def create_app(config_name):
     # config[config_name].init_app()
     # # 以上为原配置,下为采用本地配置
     app.config.from_object(config)
-    app.config.from_pyfile('config.py')  # 是否启用instance的配置
+    # app.config.from_pyfile('config.py')  # 是否启用instance的配置
 
     bootstrap.init_app(app)
     mail.init_app(app)
@@ -44,6 +38,5 @@ def create_app(config_name):
     from .main import main as main_blueprint
 
     app.register_blueprint(main_blueprint, url_prefix='/wechat')  ## 如果使用了这个参数，注册后蓝本中定义的 所有路由都会加上指定的前缀，即这个例子中的 /wechat
-
 
     return app

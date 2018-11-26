@@ -4,7 +4,7 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-from setting_local import TOKEN
+from local_config import TOKEN
 
 
 class Config:
