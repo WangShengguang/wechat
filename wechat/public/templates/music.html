@@ -1,0 +1,12 @@
+{% extends "message_base.html" %}
+
+{% block message %}
+    {{ super() }}
+    <Music>
+        <Title><![CDATA[{{ Title }}]]></Title>
+        <Description><![CDATA[{{ Description }}]]></Description>
+        <MusicUrl><![CDATA[{{ MusicUrl }}]]></MusicUrl>
+        <HQMusicUrl><![CDATA[{{ HQMusicUrl }}]]></HQMusicUrl>
+        <ThumbMediaId><![CDATA[{{ ThumbMediaId }}]]></ThumbMediaId>
+    </Music>
+{% endblock %}

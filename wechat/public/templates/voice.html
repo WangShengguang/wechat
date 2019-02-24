@@ -1,0 +1,8 @@
+{% extends "message_base.html" %}
+
+{% block message %}
+    {{ super() }}
+    <Voice>
+        <MediaId><![CDATA[{{ MediaId }}]]></MediaId>
+    </Voice>
+{% endblock %}

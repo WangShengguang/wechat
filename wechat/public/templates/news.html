@@ -1,0 +1,16 @@
+{% extends "message_base.html" %}
+
+{% block message %}
+    {{ super() }}
+    <ArticleCount>{{ items|length }}</ArticleCount>
+    <Articles>
+        {% for item in items %}
+            <item>
+                <Title><![CDATA[{{ item.Title }}]]></Title>
+                <Description><![CDATA[{{ item.Description }}]]></Description>
+                <PicUrl><![CDATA[{{ item.PicUrl }}]]></PicUrl>
+                <Url><![CDATA[{{ item.Url }}]]></Url>  {# 点击跳转链接 #}
+            </item>
+        {% endfor %}
+    </Articles>
+{% endblock %}

@@ -1,7 +1,22 @@
-.idea/*
-
+.vscode/
+.idea/
+*.pyc
+*.log
+nohup.out
+#config.py
 local_config.py
 
-*.pyc
+#
+*.txt
+*.xlsx
+*.csv
 
+
+#
+*.png
+*.json
+*.pkl
+
+# 本地文件
+local/*
 

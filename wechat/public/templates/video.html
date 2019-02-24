@@ -1,0 +1,10 @@
+{% extends "message_base.html" %}
+
+{% block message %}
+    {{ super() }}
+    <Video>
+        <MediaId><![CDATA[{{ MediaId }}]]></MediaId>
+        <Title><![CDATA[{{ Title }}]]></Title>
+        <Description><![CDATA[{{ Description }}]]></Description>
+    </Video>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "message_base.html" %}
+
+{% block message %}
+    {{ super() }}
+    <PicUrl><![CDATA[{{ PicUrl }}]]></PicUrl>
+    <MediaId><![CDATA[{{ MediaId }}]]></MediaId>   {# 图片消息媒体id，可以调用多媒体文件下载接口拉取数据。 #}
+{% endblock %}

@@ -2,14 +2,10 @@
 
 import os
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-from local_config import TOKEN
+root_dir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    token = TOKEN
-
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guss string.'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
@@ -32,23 +28,8 @@ class DevelopmentConfig(Config):
     MAIL_USE_TLS = True
     MAIL_USERNAME = '1085092799@qq.com'
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL')
+    whiski_db_uri = 'mysql+pymysql://{user}:{password}@{host}:{port}/{db}?charset=utf8'.format(**DBConfig.local)
+    SQLALCHEMY_DATABASE_URI = whiski_db_uri
 
 
-class TestingConfig(Config):
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL')
-
-
-class ProductionConfig(Config):
-    DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-
-
-config = {
-    'development': DevelopmentConfig,
-    'testing': TestingConfig,
-    'production': ProductionConfig,
-
-    'default': DevelopmentConfig
-}
+config = DevelopmentConfig()
