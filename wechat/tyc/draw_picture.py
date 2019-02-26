@@ -81,7 +81,8 @@ def draw_tmp_pop_picture(title, x, pops, tmps):
     # plt.xticks(range(len(x)), x)
     # 降雨曲线
     # L1, = plt.plot(x, pops, 'b-', label='降雨概率（%）')
-    L1, = plt.plot(x_smooth, pops_smooth, 'b-', label='降雨概率（%）')
+    L1, = plt.plot(x_smooth, pops_smooth, color="#1E90FF", linestyle='-', label='降雨概率（%）')
+
     plt.axis([x[0], x[-1], 0, 100])
     # anotation_max_min(x, pops) #标记最值
     plt.fill_between(x_smooth, pops_smooth, facecolor="#1E90FF", alpha=0.25)  # 填充两个函数之间的区域

@@ -1,31 +1,77 @@
-import traceback
-from functools import wraps
+import os
+import platform
+import queue
+import time
 
 from wxpy import *
 
+from local_config import LocalConfig
+from wechat.config import data_dir
+
+platform_name = platform.system()
+
+xiaobing_queue = queue.Queue()  # 先进先出；线程安全
+
 
 def login():
-    return Bot(cache_path=True, logout_callback=login)
+    if platform_name == "Linux":
+        bot = Bot(cache_path=True, console_qr=True)
+    else:
+        # bot = Bot(cache_path=True, logout_callback=)
+        bot = Bot(cache_path=True)
+    return bot
 
 
-def try_catch_rebot(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        try:
-            return func(self, *args, **kwargs)
-        except Exception:
-            logging.error(traceback.format_exc())
-            Bot(cache_path=True, logout_callback=Bot)
+class RecordTool():
+    def __init__(self):
+        self.media_path = os.path.join(data_dir, "media")
 
-    return wrapper
+    def store_media(self, msg):
+        picture_raw = msg.raw["Text"]()
+        with open(self.media_path, "wb") as f:
+            f.write(picture_raw)
 
 
 class WechatRobot(object):
     def __init__(self):
+        self.record_tool = RecordTool()
+        self.tuling = Tuling(LocalConfig.tuling.WX_robot_apikey)  # 自己key一天100
+        self.tuling = Tuling()
+        # self.xiaoi = XiaoI(LocalConfig.xiaoi.key, LocalConfig.xiaoi.Secret)
         # 初始化机器人，扫码登陆
         self.bot = login()
         self.wsg = ensure_one(self.bot.friends().search('robot', sex=MALE))
         self.tyc = ensure_one(self.bot.friends().search('春春', province="辽宁", city="丹东"))
+        self.xiaobing = ensure_one(self.bot.mps().search("小冰", province="北京", city='海淀'))
+
+    def chat_bot(self):
+        wechats = [self.wsg, self.tyc]
+
+        # @self.bot.register(chats=wechats)
+        def tuling_bot(msg):
+            if msg.type == "Text":
+                self.tuling.do_reply(msg)
+
+        @self.bot.register(chats=wechats)
+        def xiaobing_bot(msg):
+            print(msg)
+            if msg.type == "Text":
+                # self.tuling.do_reply(msg)
+                self.xiaobing.send(msg.text)
+            else:
+                self.record_tool.store_media(msg)
+                if msg.type == "Picture":
+                    self.xiaobing.send_image(self.record_tool.media_path)  # msg.raw["Text"]())
+            # 从小冰获取结果
+            while xiaobing_queue.empty():
+                time.sleep(0.01)  # 0.1秒则代表休眠100毫秒
+            while not xiaobing_queue.empty():
+                result_msg = xiaobing_queue.get()
+                if result_msg.type == "Text":
+                    msg.reply_msg(result_msg.text)
+                else:
+                    self.record_tool.store_media(result_msg)  #
+                    msg.reply_image(self.record_tool.media_path)  # 回复图片，给msg发送者回复消息
 
     def tyc_task(self):
         bot = self.bot
@@ -34,15 +80,15 @@ class WechatRobot(object):
         # 回复 my_friend 的消息 (优先匹配后注册的函数!)
         @self.bot.register(self.wsg)
         def reply_myself(msg):
-            return 'received: {} ({})'.format(msg.text, msg.type)
+            result = 'received: {} ({})'.format(msg.text, msg.type)
+            return msg.text
 
     def xiaobing_task(self):
         # 微软小冰
-        xiaobing = ensure_one(self.bot.mps().search("小冰", province="北京", city='海淀'))
-
-        @self.bot.register(xiaobing)
-        def print_others(msg):
-            print("小冰：", msg)
+        @self.bot.register(self.xiaobing)
+        def handle(msg):
+            # print("小冰：", msg)
+            xiaobing_queue.put(msg)
 
     def general_task(self):
         # 自动接受新的好友请求
@@ -59,9 +105,11 @@ class WechatRobot(object):
             print(msg)
 
     def run(self):
+        # 后注册会覆盖前者注册结果
+        self.general_task()  # 通用注册函数需要放在第一个
+        self.chat_bot()
+        # self.wsg_task()
         self.tyc_task()
-        self.wsg_task()
-        self.general_task()
         self.xiaobing_task()
         # while True:
         #     time.sleep(10)

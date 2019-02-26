@@ -68,8 +68,9 @@ class Hefeng(object):
         # fl:体感温度,cond_txt:天气状况描述,tmp:温度,pcpn:降水量
         now = weather["now"]
         pcpn_str = "降水量{}mm".format(now["pcpn"]) if float(now["pcpn"]) > 0 else "无降雨"
-        now_weather = "当前{}，温度{}℃，体感温度{}℃，{}".format(
-            now["cond_txt"], now["tmp"], now["fl"], pcpn_str)
+        # now_weather = "当前{}，温度{}℃，体感温度{}℃，{}".format(
+        #     now["cond_txt"], now["tmp"], now["fl"], pcpn_str)
+        now_weather = "当前温度{}℃，体感温度{}℃".format(now["tmp"], now["fl"])
         now_msg.append(now_weather)
         # 解析daily_forecast，未来三天天气
         # date:预报日期,cond_txt_d:白天天气,cond_txt_n:夜间天气,tmp_max:最高温度,tmp_min:最低温度,pop:降水概率
@@ -82,14 +83,14 @@ class Hefeng(object):
         morning_msg.append(today_weather)
         afternoon_msg.append(tomorrow_weather)
 
-        # 解析，生活指数
-        indexes = {'舒适度指数': 'comf', '洗车指数': 'cw', '穿衣指数': 'drsg', '感冒指数': 'flu',
-                   '运动指数': 'sport', '旅游指数': 'trav', '紫外线指数': 'uv', '空气污染扩散条件指数': 'air',
-                   '空调开启指数': 'ac', '过敏指数': 'ag', '太阳镜指数': 'gl', '化妆指数': 'mu',
-                   '晾晒指数': 'airc', '交通指数': 'ptfc', '钓鱼指数': 'fsh', '防晒指数': 'spi'}
-        lifestyle = {index["type"]: index for index in weather["lifestyle"]}  # type,brf,txt
-        lifestyle_str = "穿衣指数：{}。{}".format(lifestyle["drsg"]["brf"], lifestyle["drsg"]["txt"])
-        morning_msg.append(lifestyle_str)
+        # # 解析，生活指数
+        # indexes = {'舒适度指数': 'comf', '洗车指数': 'cw', '穿衣指数': 'drsg', '感冒指数': 'flu',
+        #            '运动指数': 'sport', '旅游指数': 'trav', '紫外线指数': 'uv', '空气污染扩散条件指数': 'air',
+        #            '空调开启指数': 'ac', '过敏指数': 'ag', '太阳镜指数': 'gl', '化妆指数': 'mu',
+        #            '晾晒指数': 'airc', '交通指数': 'ptfc', '钓鱼指数': 'fsh', '防晒指数': 'spi'}
+        # lifestyle = {index["type"]: index for index in weather["lifestyle"]}  # type,brf,txt
+        # lifestyle_str = "穿衣指数：{}。{}".format(lifestyle["drsg"]["brf"], lifestyle["drsg"]["txt"])
+        # morning_msg.append(lifestyle_str)
 
         # 解析hourly ，未来24小时每小时天气
         # tmp:温度，cond_txt:天气状况(多云)，pop:降雨概率，time:预报时间
