@@ -25,6 +25,9 @@ class Juhe(object):
         return des
 
     def wechat_choice(self):
+        """
+        微信精选
+        """
         url = "http://v.juhe.cn/weixin/query?key={}".format(self.wechat_feature_key)
         res = requests.get(url).json()
         count = int(res["result"]["ps"])

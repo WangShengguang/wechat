@@ -1,5 +1,5 @@
 import http.client
-import urllib
+import urllib.parse
 
 from local_config import LocalConfig
 
@@ -13,7 +13,7 @@ version = "v2"
 sms_tpl_send_uri = "/" + version + "/sms/tpl_single_send.json"
 
 
-class Pianyun(object):
+class Yunpian(object):
     def __init__(self):
         pass
 
@@ -63,14 +63,14 @@ class TycTpl(Template):
     def __init__(self):
         super().__init__()
         self.sub_account = "陶盈春"
-        self.apikey = LocalConfig.pianyun.tyc_apikey
+        self.apikey = LocalConfig.yunpian.tyc_apikey
 
 
 class WsgTpl(Template):
     def __init__(self):
         super().__init__()
         self.sub_account = "王胜广"
-        self.apikey = LocalConfig.pianyun.wsg_apikey
+        self.apikey = LocalConfig.yunpian.wsg_apikey
 
 
 class TplRain(TycTpl):

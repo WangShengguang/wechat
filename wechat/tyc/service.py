@@ -7,7 +7,7 @@ from local_config import Persons
 from wechat.api.funny import Funny
 from wechat.api.juhe import Juhe
 from wechat.tyc.draw_picture import weather_pic_name
-from wechat.tyc.hefeng import Hefeng
+from wechat.api.hefeng import Hefeng
 from wechat.tyc.robot import WechatRobot
 from wechat.tyc.tools import get_lot_lat
 
