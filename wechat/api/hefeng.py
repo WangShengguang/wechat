@@ -46,6 +46,20 @@ class Hefeng(object):
         return air_quality
 
     @try_except_with_logging
+    def get_3_days_weather(self):
+        """ 日出时间
+        """
+        weather_url = "https://api.heweather.net/s6/weather?"  # 常规天气
+        weather = self.get_json(weather_url)
+        self.store_to_local("weather.json", weather)
+        # 基础信息
+        # location:地区／城市名称,parent_city:该地区／城市的上级城市，admin_area:该地区／城市所属行政区域
+        weather = weather["HeWeather6"][0]
+        dailys = weather["daily_forecast"]  # 未来三天
+        today, tomorrow, after_tomorrow = dailys[0], dailys[1], dailys[2]
+        return today, tomorrow, after_tomorrow
+
+    @try_except_with_logging
     def get_weather(self):
         """ 常规天气，weather.json
         https://www.heweather.com/documents/api/s6/weather-all
@@ -70,14 +84,28 @@ class Hefeng(object):
         pcpn_str = "降水量{}mm".format(now["pcpn"]) if float(now["pcpn"]) > 0 else "无降雨"
         # now_weather = "当前{}，温度{}℃，体感温度{}℃，{}".format(
         #     now["cond_txt"], now["tmp"], now["fl"], pcpn_str)
+        icon_dic = {"晴": "🌤", "雨": "🌧", "阴": " ️🌥️"}
         now_weather = "当前温度{}℃，体感温度{}℃".format(now["tmp"], now["fl"])
         now_msg.append(now_weather)
         # 解析daily_forecast，未来三天天气
         # date:预报日期,cond_txt_d:白天天气,cond_txt_n:夜间天气,tmp_max:最高温度,tmp_min:最低温度,pop:降水概率
         dailys = weather["daily_forecast"]  # 未来三天
         today, tomorrow, after_tomorrow = dailys[0], dailys[1], dailys[2]
-        today_weather = "今天白天{}，夜间{}，温度{}~{}℃，降雨概率{}%".format(
-            today["cond_txt_d"], today["cond_txt_n"], today["tmp_min"], today["tmp_max"], today["pop"])
+        # today_sr = today["sr"]
+        # tomorrow_sr = tomorrow["sr"]
+        # today_weather = "今天白天{}，夜间{}，温度{}~{}℃，降雨概率{}%".format(
+        #     today["cond_txt_d"], today["cond_txt_n"], today["tmp_min"], today["tmp_max"], today["pop"])
+        icon = ""
+        if "雨" in today["cond_txt_d"]:
+            icon = icon_dic["雨"]
+        elif "阴" in today["cond_txt_d"] or "云" in today["cond_txt_d"]:
+            icon = icon_dic["阴"]
+        elif "晴" in today["cond_txt_d"]:
+            icon = icon_dic["晴"]
+        today_weather = "今天{}{}，温度{}~{}℃，降雨概率{}%".format(
+            today["cond_txt_d"], icon.strip(), today["tmp_min"], today["tmp_max"], today["pop"])
+        if int(today["pop"]) > 0:
+            today_weather += " 🌂"
         tomorrow_weather = "明天白天{}，夜间{}，温度{}~{}℃，降雨概率{}%".format(
             tomorrow["cond_txt_d"], tomorrow["cond_txt_n"], tomorrow["tmp_min"], tomorrow["tmp_max"], tomorrow["pop"])
         morning_msg.append(today_weather)
@@ -116,7 +144,9 @@ class Hefeng(object):
         month = now.month if now.month >= 10 else "0{}".format(now.month)
         date_str = "{}-{}-{}".format(now.year, month, day)
         self.draw_hourly_chart(city_info, date_str)
-        return '\n\n'.join(now_msg) + hourly_weather, '\n\n'.join(morning_msg), '\n\n'.join(afternoon_msg)
+        res = ('\n\n'.join(now_msg) + hourly_weather, '\n\n'.join(morning_msg), '\n\n'.join(afternoon_msg),
+               today, tomorrow)
+        return res
 
     def draw_hourly_chart(self, city_info, date_str):
         hourlys = self.get_hourly_weather()["HeWeather6"][0]["hourly"]

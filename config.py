@@ -2,7 +2,13 @@
 
 import os
 
-root_dir = os.path.abspath(os.path.dirname(__file__))
+from local_config import DBConfig
+
+root_dir = os.path.dirname(__file__)
+data_dir = os.path.join(root_dir, "data")
+
+if not os.path.exists(data_dir):
+    os.makedirs(data_dir)
 
 
 class Config:
@@ -21,15 +27,17 @@ class Config:
         pass
 
 
-class DevelopmentConfig(Config):
+class WechatConfig(Config):
     DEBUG = True
     MAIL_SERVER = 'smtp.qq.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_USERNAME = '1085092799@qq.com'
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    whiski_db_uri = 'mysql+pymysql://{user}:{password}@{host}:{port}/{db}?charset=utf8'.format(**DBConfig.local)
+    whiski_db_uri = 'mysql+pymysql://{user}:{password}@{host}:{port}/{db}?charset=utf8'.format(**DBConfig.wechat)
     SQLALCHEMY_DATABASE_URI = whiski_db_uri
 
 
-config = DevelopmentConfig()
+config = {
+    "wechat": WechatConfig
+}

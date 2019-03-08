@@ -31,7 +31,7 @@
 
  
 ## 天气预报
- - [和风天气](https://www.heweather.com/)
+ - [和风天气](https://www.heweather.com/documents/api/)
  - [心知天气](https://www.seniverse.com/)
 
 

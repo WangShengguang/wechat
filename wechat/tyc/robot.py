@@ -14,11 +14,10 @@ xiaobing_queue = queue.Queue()  # 先进先出；线程安全
 
 
 def login():
+    console_qr = False
     if platform_name == "Linux":
-        bot = Bot(cache_path=True, console_qr=True)
-    else:
-        # bot = Bot(cache_path=True, logout_callback=)
-        bot = Bot(cache_path=True)
+        console_qr = True
+    bot = Bot(cache_path=True, console_qr=console_qr)
     return bot
 
 
@@ -56,7 +55,6 @@ class WechatRobot(object):
         def xiaobing_bot(msg):
             print(msg)
             if msg.type == "Text":
-                # self.tuling.do_reply(msg)
                 self.xiaobing.send(msg.text)
             else:
                 self.record_tool.store_media(msg)

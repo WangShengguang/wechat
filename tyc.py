@@ -7,8 +7,9 @@ def run_server():
     Service().run()
 
 
-def test():
-    pass
+def deploy():
+    from wechat.tyc.dao.models.wx_models import create_all
+    create_all()
 
 
 if __name__ == "__main__":
