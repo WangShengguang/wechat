@@ -49,4 +49,13 @@
  - [https](https://www.cnblogs.com/ceshijiagoushi/p/6812493.html)
  
  
-  
+# Linux环境设置
+## centos换源
+https://blog.csdn.net/IMW_MG/article/details/77278197  
+## pip换源
+
+## centos7中文支持
+yum install kde-l10n-Chinese 
+
+中文乱码
+https://www.cnblogs.com/hfyfpga/p/5451918.html

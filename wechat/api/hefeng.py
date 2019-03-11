@@ -74,96 +74,12 @@ class Hefeng(object):
         # location:地区／城市名称,parent_city:该地区／城市的上级城市，admin_area:该地区／城市所属行政区域
         weather = weather["HeWeather6"][0]
         basic = weather["basic"]
-        city_info = "{}市{}区".format(basic["admin_area"], basic["location"])
-        now_msg = []
-        morning_msg = []
-        afternoon_msg = []
-        # 当前天气
-        # fl:体感温度,cond_txt:天气状况描述,tmp:温度,pcpn:降水量
         now = weather["now"]
-        pcpn_str = "降水量{}mm".format(now["pcpn"]) if float(now["pcpn"]) > 0 else "无降雨"
-        # now_weather = "当前{}，温度{}℃，体感温度{}℃，{}".format(
-        #     now["cond_txt"], now["tmp"], now["fl"], pcpn_str)
-        icon_dic = {"晴": "🌤", "雨": "🌧", "阴": " ️🌥️"}
-        now_weather = "当前温度{}℃，体感温度{}℃".format(now["tmp"], now["fl"])
-        now_msg.append(now_weather)
-        # 解析daily_forecast，未来三天天气
-        # date:预报日期,cond_txt_d:白天天气,cond_txt_n:夜间天气,tmp_max:最高温度,tmp_min:最低温度,pop:降水概率
+        lifestyle = weather["lifestyle"]
         dailys = weather["daily_forecast"]  # 未来三天
-        today, tomorrow, after_tomorrow = dailys[0], dailys[1], dailys[2]
-        # today_sr = today["sr"]
-        # tomorrow_sr = tomorrow["sr"]
-        # today_weather = "今天白天{}，夜间{}，温度{}~{}℃，降雨概率{}%".format(
-        #     today["cond_txt_d"], today["cond_txt_n"], today["tmp_min"], today["tmp_max"], today["pop"])
-        icon = ""
-        if "雨" in today["cond_txt_d"]:
-            icon = icon_dic["雨"]
-        elif "阴" in today["cond_txt_d"] or "云" in today["cond_txt_d"]:
-            icon = icon_dic["阴"]
-        elif "晴" in today["cond_txt_d"]:
-            icon = icon_dic["晴"]
-        today_weather = "今天{}{}，温度{}~{}℃，降雨概率{}%".format(
-            today["cond_txt_d"], icon.strip(), today["tmp_min"], today["tmp_max"], today["pop"])
-        if int(today["pop"]) > 0:
-            today_weather += " 🌂"
-        tomorrow_weather = "明天白天{}，夜间{}，温度{}~{}℃，降雨概率{}%".format(
-            tomorrow["cond_txt_d"], tomorrow["cond_txt_n"], tomorrow["tmp_min"], tomorrow["tmp_max"], tomorrow["pop"])
-        morning_msg.append(today_weather)
-        afternoon_msg.append(tomorrow_weather)
-
-        # # 解析，生活指数
-        # indexes = {'舒适度指数': 'comf', '洗车指数': 'cw', '穿衣指数': 'drsg', '感冒指数': 'flu',
-        #            '运动指数': 'sport', '旅游指数': 'trav', '紫外线指数': 'uv', '空气污染扩散条件指数': 'air',
-        #            '空调开启指数': 'ac', '过敏指数': 'ag', '太阳镜指数': 'gl', '化妆指数': 'mu',
-        #            '晾晒指数': 'airc', '交通指数': 'ptfc', '钓鱼指数': 'fsh', '防晒指数': 'spi'}
-        # lifestyle = {index["type"]: index for index in weather["lifestyle"]}  # type,brf,txt
-        # lifestyle_str = "穿衣指数：{}。{}".format(lifestyle["drsg"]["brf"], lifestyle["drsg"]["txt"])
-        # morning_msg.append(lifestyle_str)
-
-        # 解析hourly ，未来24小时每小时天气
-        # tmp:温度，cond_txt:天气状况(多云)，pop:降雨概率，time:预报时间
-        hourlys = weather["hourly"]
-        print("** common hourlys： {}".format(hourlys))
-        hourly_weather = ""
-        for hour_weather in hourlys:
-            pop = int(hour_weather["pop"])
-            if pop >= 50:  # 降雨概率
-                hour, minute = hour_weather["time"].split(" ")[1].split(':')
-                offset = (24 + int(hour) - int(datetime.now().hour)) % 24
-                if offset < 5:
-                    # doto 降雨概率图
-                    hourly_weather = "，未来{}小时（{}）可能有降雨，降雨概率{}%，请注意携带雨具".format(
-                        offset, hour + ":00", pop)
-                # now_msg.append(hourly_weather)
-                break
-        hourly_weather = hourly_weather if hourly_weather else "，未来5小时内降雨概率小于50%"
-        # print("***hourlys:{}".format(hourlys))
-        now = datetime.now()
-        day = now.day if now.hour < 18 else (now + timedelta(days=1)).day
-        day = day if day >= 10 else "0{}".format(day)
-        month = now.month if now.month >= 10 else "0{}".format(now.month)
-        date_str = "{}-{}-{}".format(now.year, month, day)
-        self.draw_hourly_chart(city_info, date_str)
-        res = ('\n\n'.join(now_msg) + hourly_weather, '\n\n'.join(morning_msg), '\n\n'.join(afternoon_msg),
-               today, tomorrow)
-        return res
-
-    def draw_hourly_chart(self, city_info, date_str):
-        hourlys = self.get_hourly_weather()["HeWeather6"][0]["hourly"]
-        tmps = []
-        pops = []
-        x = []
-        for hour_weather in hourlys:
-            # print("date_str: {}".format(date_str))
-            # print(hour_weather["time"].split(" ")[0])
-            if date_str == hour_weather["time"].split(" ")[0]:
-                hour, minute = hour_weather["time"].split(" ")[1].split(':')
-                x.append(int(hour))
-                tmps.append(int(hour_weather["tmp"]))
-                pops.append(int(hour_weather["pop"]))
-        date_str = "{}月{}日".format(*date_str.split("-")[1:])
-        pic_title = "{}{}温度及降雨概率图".format(city_info, date_str)
-        draw_tmp_pop_picture(pic_title, x, pops, tmps)
+        hourlys = weather["hourly"]  # 不精确，改用专门的hourly接口
+        # today, tomorrow, after_tomorrow = dailys[0], dailys[1], dailys[2]
+        return basic, now, lifestyle, dailys
 
     def run(self):
         self.get_air_quality()

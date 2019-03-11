@@ -16,7 +16,7 @@ xiaobing_queue = queue.Queue()  # 先进先出；线程安全
 def login():
     console_qr = False
     if platform_name == "Linux":
-        console_qr = True
+        console_qr = 2
     bot = Bot(cache_path=True, console_qr=console_qr)
     return bot
 
@@ -39,7 +39,8 @@ class WechatRobot(object):
         # self.xiaoi = XiaoI(LocalConfig.xiaoi.key, LocalConfig.xiaoi.Secret)
         # 初始化机器人，扫码登陆
         self.bot = login()
-        self.wsg = ensure_one(self.bot.friends().search('robot', sex=MALE))
+        wsg_name = "robot" if self.bot.self.name == "王胜广" else "王胜广"
+        self.wsg = ensure_one(self.bot.friends().search(wsg_name, sex=MALE))
         self.tyc = ensure_one(self.bot.friends().search('春春', province="辽宁", city="丹东"))
         self.xiaobing = ensure_one(self.bot.mps().search("小冰", province="北京", city='海淀'))
 
@@ -102,7 +103,17 @@ class WechatRobot(object):
         def print_others(msg):
             print(msg)
 
+    def send_msg_to_someone(self, user_name, text_msgs=(), pictute_msgs=()):
+        user = {"tyc": self.tyc, "wsg": self.wsg}.get(user_name)
+        print("** user_name:{} send to {}".format(user_name, user))
+        for text in text_msgs:
+            user.send_msg(text)
+        for pic_path in pictute_msgs:
+            if os.path.exists(pic_path):
+                user.send_image(pic_path)
+
     def run(self):
+        print("微信任务注册成功")
         # 后注册会覆盖前者注册结果
         self.general_task()  # 通用注册函数需要放在第一个
         self.chat_bot()

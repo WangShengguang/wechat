@@ -110,5 +110,7 @@ def draw_tmp_pop_picture(title, x, pops, tmps):
     # plt.tick_params(axis='y', colors='red') #刻度颜色
     # 合并图例
     plt.legend(handles=[L1, L2], loc='upper right')  # , loc=9)
+    if os.path.exists(weather_pic_name):  # 删除旧图片
+        os.remove(weather_pic_name)
     plt.savefig(weather_pic_name)
     # plt.show()
